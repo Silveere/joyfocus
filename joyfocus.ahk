@@ -1,5 +1,10 @@
 ; joyfocus 1.1 LazyTech
 ; A public domain work under the UnLicense. See LICENSE for details.
+#Include xinput.ahk
+
+; Initialize XInput (DirectX Input Library)
+XInput_Init()
+
 #Persistent
 SetTimer, WatchAxis, 100 ; milliseconds
 return
@@ -17,6 +22,19 @@ WatchAxis:
 GetKeyState, JoyX, JoyX  ; Get position of stick Roll.
 GetKeyState, JoyY, JoyY  ; Get position of stick Pitch.
 GetKeyState, JoyZ, JoyZ  ; Get position of Throttle.
+Loop, 4 {
+if State := XInput_GetState(A_Index-1) {
+LT := floor(State.bLeftTrigger / 2.55)
+RT := floor(State.bRightTrigger / 2.55)
+LX := floor(State.sThumbLX / 655.36) + 50
+LY := floor(State.sThumbLY / 655.36) + 50
+RX := floor(State.sThumbRX / 655.36) + 50
+RY := floor(State.sThumbRY / 655.36) + 50
+Buttons := State.wButtons
+}
+}
+;ToolTip, State: %State% `nLT: %LT%`n RT: %RT%`n LX: %LX%`n LY: %LY%`n RX: %RX%`n RY: %RY%`n Buttons: %Buttons%
+
 RollWatcherPrev := RollWatcher
 PitchWatcherPrev := PitchWatcher
 ThrottleWatcherPrev := ThrottleWatcher
@@ -25,13 +43,21 @@ JoyYf := Floor(JoyY)
 JoyZf := Floor(JoyZ)
 
 
-if (JoyXf - RollWatcherPrev > 10 || JoyXf - RollWatcherPrev < -10) or (JoyYf - PitchWatcherPrev > 10 || JoyYf - PitchWatcherPrev < -10) or (JoyZf - ThrottleWatcherPrev > 10 || JoyZf - ThrottleWatcherPrev < -10)
+if (JoyXf - RollWatcherPrev > 10 || JoyXf - RollWatcherPrev < -10) or (JoyYf - PitchWatcherPrev > 10 || JoyYf - PitchWatcherPrev < -10) or (JoyZf - ThrottleWatcherPrev > 10 || JoyZf - ThrottleWatcherPrev < -10) or (Max(Abs(LXWPrev-LX), Abs(LYWPrev-LY), Abs(RXWPrev-RX), Abs(RYWPrev-RY), Abs(LTWPrev-LT), Abs(RTWPrev-RT)) > 10) or ButtonsPrev != Buttons
 {
 	IfWinExist, Elite - Dangerous (CLIENT)
 	{
 		RollWatcher := JoyXf
 		PitchWatcher := JoyYf
 		ThrottleWatcher := JoyZf
+		LXWPrev := LX
+		LYWPrev := LY
+		RXWPrev := RX
+		RYWPrev := RY
+		LTWPrev := LT
+		RTWPrev := RT
+		ButtonsPrev := Buttons
+
 		WinActivate
 		;ToolTip, %RollWatcherPrev% %RollWatcher%`n%PitchWatcherPrev% %PitchWatcher%`n%ThrottleWatcherPrev% %ThrottleWatcher%
 		return
