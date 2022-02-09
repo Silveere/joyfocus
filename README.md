@@ -21,6 +21,8 @@ There are some very good reasons why a program that doesn't have focus should ig
 
 This script runs in the background and checks every 100ms to see if your first input device has been moved by more than 10% on the XY of the stick or if the throttle has been moved. It also checks if you have pressed any button numbered 1 through 19.
 
+This script also considers any input on connected XInput enabled controllers, such as the Xbox One controller.
+
 If any of these have happened, Elite is given input focus and the joystick movements will be detected by the game.
 
 No inputs are sent to the game from this script and nothing needs to be rebound and no virtual devices need to be installed, though this would probably detect those too if you wanted it to.
@@ -46,6 +48,8 @@ This would monitor Yaw on device 2 and Throttle on device 5:
 `GetKeyState, JoyX, 2JoyX`
 
 `GetKeyState, JoyZ, 5JoyZ`
+
+XInput controllers should not require any special configuration.
 
 ## History
 
